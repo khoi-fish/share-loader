@@ -1,6 +1,7 @@
 /*
 	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Maor Frankel
+  Author Maor Frankel
+  Edited by Khoi Nguyen
 */
 
 var path = require('path')
@@ -41,21 +42,25 @@ module.exports.pitch = function(remainingRequest) {
   // This prevents [chunkhash] values from changing when running webpack
   // builds in different directories.
   // this.loadModule('@angular/core', (a,b,c,d) =>{debugger;});
-  if ((this._module.userRequest.match(/node_modules/g) || []).length > 1) {
+  if ((this.context.match(/node_modules/g) || []).length > 1) {
     return
   }
+  // Skip adding the module to the shared dependency global object if it's
+  // marked as excluded.
   if (
     this.query.exclude.some(mdl =>
-      this._module.rawRequest.match(new RegExp(mdl)),
+      this.context.match(new RegExp(`/${mdl}/?(?!-)`)),
     )
   ) {
     return
   }
+  // Skip adding the module to the shared dependency global object if it does
+  // not match any modules specified to be shared.
   if (
     this.query.modules &&
     this.query.modules.length &&
     this.query.modules.every(
-      mdl => !this._module.rawRequest.match(new RegExp(mdl)),
+      mdl => !this.context.match(new RegExp(`/${mdl}/?(?!-)`)),
     )
   ) {
     return
@@ -73,17 +78,8 @@ module.exports.pitch = function(remainingRequest) {
   let request = this._module.rawRequest.split('!')
 
   let globalVar
-  if (this._module.userRequest.includes('/node_modules/')) {
-    request = request[request.length - 1].replace(/^@/i, '').replace(/\//g, '.')
-    globalVar = `${this.query.namespace.replace(/^\?/i, '')}.${request}`
-  } else {
-    //Use modules from parent app
-    request = request[request.length - 1]
-      .replace(/\.\.\//g, '')
-      .replace(/\.\//g, '')
-      .replace(/\//g, '.')
-    globalVar = `${this.query.namespace}.${request}`
-  }
+  request = request[request.length - 1].replace(/^@/i, '').replace(/\//g, '.')
+  globalVar = `${this.query.namespace.replace(/^\?/i, '')}.${request}`
 
   this._module.userRequest = this._module.userRequest + '-shared'
   return `${accesorString(globalVar)}
@@ -96,15 +92,22 @@ module.exports.pitch = function(remainingRequest) {
 
 module.exports.Externals = function(options) {
   return function(context, request, callback) {
-    if (options.modules.every(mdl => !request.match(new RegExp(mdl)))) {
+    if (request.indexOf('.scss') > 0) {
+      return callback()
+    }
+
+    // Skip specifying global dependency if the current requested module
+    // does not match any of the specified modules.
+    if (options.modules.every(mdl => !request.match(new RegExp(`^${mdl}$`)))) {
       return callback()
     }
     if (
       options.exclude &&
-      options.exclude.some(mdl => request.match(new RegExp(mdl)))
+      options.exclude.some(mdl => request.match(new RegExp(`^${mdl}$`)))
     ) {
       return callback()
     }
+
     let newRequest = request.split('!')
     newRequest = newRequest[newRequest.length - 1]
       .replace(/^[./@]/i, '')

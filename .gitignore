@@ -11,3 +11,5 @@ Thumbs.db
 .iml
 .vscode
 .awcache/
+core-app/dist
+feature-app/dist

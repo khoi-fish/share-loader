@@ -9,7 +9,7 @@ const ROUTES = [
     route: '/feature1',
     component: () => (
       <AsyncComponent
-        namespace="sample"
+        namespace="feature-app"
         url="http://localhost:4567/feature-app.js"
         pageName="Feature1"
       />
