@@ -47,15 +47,7 @@ module.exports.pitch = function(remainingRequest) {
   if ((this.context.match(/node_modules/g) || []).length > 1) {
     return
   }
-  // Skip adding the module to the shared dependency global object if it's
-  // marked as excluded.
-  if (
-    this.query.exclude.some(mdl =>
-      this.context.match(new RegExp(`/${mdl}/?(?!-)`)),
-    )
-  ) {
-    return
-  }
+
   // Skip adding the module to the shared dependency global object if it does
   // not match any modules specified to be shared.
   if (
@@ -103,19 +95,9 @@ module.exports.pitch = function(remainingRequest) {
 
 module.exports.Externals = function(options) {
   return function(context, request, callback) {
-    if (request.indexOf('.scss') > 0) {
-      return callback()
-    }
-
     // Skip specifying global dependency if the current requested module
     // does not match any of the specified modules.
     if (options.modules.every(mdl => !request.match(new RegExp(`^${mdl}$`)))) {
-      return callback()
-    }
-    if (
-      options.exclude &&
-      options.exclude.some(mdl => request.match(new RegExp(`^${mdl}$`)))
-    ) {
       return callback()
     }
 
