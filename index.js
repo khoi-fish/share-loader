@@ -4,7 +4,7 @@
   Edited by Khoi Nguyen
 */
 
-var path = require('path')
+const path = require('path')
 
 function accesorString(value) {
   const childProperties = value.split('.')
@@ -13,8 +13,10 @@ function accesorString(value) {
   let result = ''
 
   for (let i = 0; i < length; i++) {
-    if (i > 0)
+    if (i > 0) {
       result += 'if(!' + propertyString + ') ' + propertyString + ' = {};\n'
+    }
+
     propertyString += '[' + JSON.stringify(childProperties[i]) + ']'
   }
 
@@ -78,8 +80,17 @@ module.exports.pitch = function(remainingRequest) {
   let request = this._module.rawRequest.split('!')
 
   let globalVar
-  request = request[request.length - 1].replace(/^@/i, '').replace(/\//g, '.')
-  globalVar = `${this.query.namespace.replace(/^\?/i, '')}.${request}`
+  if (this.context.includes('/node_modules/')) {
+    request = request[request.length - 1].replace(/^@/i, '').replace(/\//g, '.')
+    globalVar = `${this.query.namespace.replace(/^\?/i, '')}.${request}`
+  } else {
+    //Use modules from parent app
+    request = request[request.length - 1]
+      .replace(/\.\.\//g, '')
+      .replace(/\.\//g, '')
+      .replace(/\//g, '.')
+    globalVar = `${this.query.namespace}.${request}`
+  }
 
   this._module.userRequest = this._module.userRequest + '-shared'
   return `${accesorString(globalVar)}
