@@ -15,63 +15,72 @@
 <h2 align="center">Install</h2>
 
 ```bash
-npm i share-loader --save-dev
-```
-Or
-```bash
 yarn add share-loader --save-dev
 ```
+
 <h2 align="center"><a href="https://webpack.js.org/concepts/loaders">Usage</a></h2>
 
-webpack config of exposing app
+Webpack config of the core/host application
+
 ```js
 module: {
-  rules: [{
-          test: /\.js?$/,
-          use: [{
-            loader: 'share-loader',
-            options: {
-              modules: [/@angular/, /@uirouter\/angular/],
-              exclude: [/@angular\/material/],
-              namespace: 'some-name-space'
-            }
-          }]
-        }]
+  rules: [
+    {
+      test: /\.js?$/,
+      use: [
+        {
+          loader: 'share-loader',
+          options: {
+            modules: ['@material-ui/core', 'react', 'react-dom'],
+            namespace: 'some-name-space',
+          },
+        },
+      ],
+    },
+  ]
 }
 ```
 
-
-webpack config of consumer apps
+Webpack config of consumer apps
 
 ```js
-const {Externals} = require('./share-loader');
+const { Externals } = require('share-loader')
 
 externals: [
   Externals({
     namespace: 'some-name-space',
-    modules: [/@angular/, /@uirouter\/angular/]
+    modules: ['@material-ui/core', 'react']
   })
 ],
 output: {
-  library: 'some-name-space',
+  library: ['some-name-space', packageJson.name],
   libraryTarget: 'umd'
 }
-
-
-Example
-
-1. In the root folder, run npm bootstrap
-2. Run npm run build:prod in the ext-app-1 root
-3. Host the ext1.js file from ext-app-1 project in some localhost server
-4. Change the <%path-to-server-host%> in the shell project app.state.ts
-5. Run npm run serve:dev in the shell project root
-
-
-
-Example-cli
-1. In the root folder, run npm bootstrap
-2. In "shell app" folder run npm run start:prod
-3. In the "ext-app1" folder run npm run start:ext:prod
-4. For AOT run npm serve --prod in "shell-app" and npm run serve:ext:prod in "ext-app1"
-5. You can also run ext-app1 in standalone mode with ng serve
 ```
+
+<h2 align="center">Demo</a></h2>
+
+### core-app
+
+1. In the root folder, `cd` into `core-app`
+2. Run `yarn install`
+3. Run `yarn dev`
+4. This will spin up a local dev server on `localhost:1234`
+
+### feature-app
+
+1. In a seperate terminal window, `cd` into `feature-app`
+2. Run `yarn install`
+3. Run `yarn serve`
+4. This will spin up a local server on `localhost:4567` and allow you to access the built JS file via `localhost:4567/feature-app.js`
+5. There is also a `yarn dev` command to allow you to make whatever changes you need.
+
+### Combining the Two
+
+1. Go to `localhost:1234`
+2. Click on `Feature 1` in the top nav bar
+3. Watch as `core-app` pulls in `feature-app.js` and dynamically loads the page (you can see this in your browser's network tab)
+
+### Notes
+
+- If you make changes in the feature app and they are not being reflected in the core app, make sure you disable caching in your browser's console.
