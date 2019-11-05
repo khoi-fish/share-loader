@@ -1,7 +1,10 @@
 {
-  "name": "share-loader",
-  "version": "0.7.0",
+  "name": "@khoifish/share-loader",
+  "version": "1.0.0",
   "author": "MFrankel",
+  "contributors": [
+    "khoifish"
+  ],
   "description": "share loader module for webpack",
   "license": "MIT",
   "main": "index.js",
