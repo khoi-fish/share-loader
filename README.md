@@ -58,6 +58,10 @@ output: {
 }
 ```
 
+You can see your shared dependencies in the Window object under the namespace variable you declared in your Webpack config.
+
+![dependencies in global scope gif](./sample.gif)
+
 <h2 align="center">Demo</a></h2>
 
 ### core-app
