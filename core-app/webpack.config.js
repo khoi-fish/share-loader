@@ -56,7 +56,6 @@ module.exports = {
             loader: 'share-loader-custom',
             options: {
               modules: ['@material-ui/core', 'react', 'react-dom'],
-              exclude: [],
               namespace: 'sample',
             },
           },

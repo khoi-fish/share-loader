@@ -13,7 +13,6 @@ module.exports = env => {
         namespace: 'sample',
         // Specify dependencies you want to share with the core app
         modules: ['@material-ui/core', 'react', 'react-dom'],
-        exclude: ['react-vis'],
       }),
     ],
     output: {
