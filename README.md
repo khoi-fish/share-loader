@@ -75,7 +75,7 @@ You can see your shared dependencies in the Window object under the namespace va
 
 1. In a seperate terminal window, `cd` into `feature-app`
 2. Run `yarn install`
-3. Run `yarn serve`
+3. Run `yarn build && yarn serve`
 4. This will spin up a local server on `localhost:4567` and allow you to access the built JS file via `localhost:4567/feature-app.js`
 5. There is also a `yarn dev` command to allow you to make whatever changes you need.
 
